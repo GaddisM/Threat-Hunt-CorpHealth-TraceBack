@@ -1,5 +1,5 @@
-# CorpHealth : TraceBack
-**Threat Hunting Investigation Report**
+
+<img width="1024" height="1536" alt="ChatGPT Image Feb 19, 2026, 11_59_04 PM" src="https://github.com/user-attachments/assets/c1a78af5-35f9-4867-a368-a373b8273fcd" />
 
 ---
 
@@ -38,7 +38,7 @@ This report provides a full technical reconstruction of the attack chain, mapped
 ## Investigation Methodology
 
 This investigation followed a **hypothesis-driven threat hunting model**:
-
+```kql
 1. **Scope Definition** – Identify affected assets and timeframe  
 2. **Baseline Validation** – Compare observed activity against known CorpHealth behavior  
 3. **Behavioral Deviation Analysis** – Identify anomalies across process, file, registry, and network telemetry  
@@ -47,20 +47,21 @@ This investigation followed a **hypothesis-driven threat hunting model**:
 6. **Attribution Context** – Enrich with session metadata and geolocation  
 7. **Closure & Synthesis** – Reconstruct full attack chain  
 
-
+```
 -----
 ## Scope and Environment
 
 This investigation was conducted within a controlled corporate endpoint environment supporting internal operations and diagnostics.
 
 ### Organizational Context
+```kql
 - **Company Name:** CorpHealth
 - **Business Function:** Internal endpoint diagnostics, operational monitoring, and maintenance
 - **Environment Type:** Corporate IT Operations (On-Prem + Cloud-integrated)
-
+```
 ### In-Scope Assets
 The following assets were explicitly included in the scope of this investigation:
-
+```kql
 - **Endpoint:** CH-OPS-WKS02  
   - Role: Operations / Maintenance Workstation  
   - Operating System: Windows 10 Enterprise  
@@ -76,10 +77,10 @@ The following assets were explicitly included in the scope of this investigation
   - `C:\Users\*\AppData\Local\Temp\CorpHealth\`
   - Startup and persistence locations
   - Windows Registry (HKLM focus)
-
+```
 ### Telemetry Sources
 The investigation relied exclusively on native security telemetry:
-
+```kql
 - Microsoft Defender for Endpoint
   - DeviceProcessEvents
   - DeviceFileEvents
@@ -89,41 +90,36 @@ The investigation relied exclusively on native security telemetry:
 - Defender geolocation enrichment (`geo_info_from_ip_address()`)
 
 No external OSINT platforms or third-party forensic tools were used.
-
+```
 ### Timeframe
+```kql
 - **Primary Investigation Window:**  
   `2025-11-21` → `2025-12-09`
 - **Anchor Event:**  
   First confirmed suspicious logon at `2025-11-23T03:08:31Z`
-
+```
 ### Out-of-Scope
 The following were explicitly excluded from scope:
-
+```kql
 - Other CorpHealth endpoints not exhibiting related telemetry
 - Email infrastructure and phishing analysis
 - Network firewall logs outside Defender visibility
 - Long-term attribution beyond geolocation enrichment
 
-### Assumptions and Constraints
-- All findings are based on Defender-recorded telemetry
-- Some attacker actions may not be fully observable due to permission failures or security enforcement
-- Failed attempts are considered meaningful indicators of attacker intent
-
-This scoped environment allowed for precise reconstruction of attacker behavior while minimizing noise from unrelated systems.
-
-
+```
 ---
 ## Table of Contents
 
 1. Executive Summary  
 2. Scope & Environment Overview  
-
+```kql
 3. Investigation Overview  
    3.1 Case Context  
    3.2 Data Sources  
    3.3 Investigation Methodology  
-
+```
 4. Threat Hunt Timeline & Findings  
+```kql
    4.1 Flag 0 – Scope Establishment & Device Identification  
    4.2 Flag 1 – Unique Maintenance Script Identification  
    4.3 Flag 2 – Initial Outbound Network Activity  
@@ -156,29 +152,34 @@ This scoped environment allowed for precise reconstruction of attacker behavior 
    4.30 Flag 29 – First File Accessed by Attacker  
    4.31 Flag 30 – Post-Reconnaissance Activity  
    4.32 Flag 31 – Subsequent Account Access  
+```
+6. Visual Attack Timeline
 
-5. Visual Attack Timeline  
+```kql 
    5.1 Mermaid Attack Flow Diagram  
+```
 
-6. MITRE ATT&CK Mapping  
+7. MITRE ATT&CK Mapping
+
+```kql
    6.1 Initial Access  
    6.2 Execution  
    6.3 Persistence  
    6.4 Privilege Escalation  
    6.5 Defense Evasion  
    6.6 Command and Control  
+```
+8. Analyst Reasoning & Logical Flow  
 
-7. Analyst Reasoning & Logical Flow  
+9. Detection Gaps & Defensive Opportunities  
 
-8. Detection Gaps & Defensive Opportunities  
-
-9. Conclusion & Incident Assessment  
-
-10. Appendix  
+10. Conclusion & Incident Assessment  
+```kql
+11. Appendix  
    10.1 Full KQL Queries  
    10.2 Indicators of Compromise (IOCs)  
    10.3 Reference Notes  
-
+```
 -----
 
 
@@ -981,15 +982,14 @@ Accessing the `ops.maintenance` account indicates the attacker began testing or 
 
     2025-11-27 04:19:10 : revshell.exe executed via explorer.exe
     2025-11-27 04:20:01 : Startup folder persistence established
+------
 
-| Tactic               | Technique             | ID        |
-| -------------------- | --------------------- | --------- |
-| Initial Access       | Valid Accounts        | T1078     |
-| Execution            | PowerShell            | T1059.001 |
-| Defense Evasion      | AV Exclusion          | T1562.001 |
-| Credential Access    | Credential Harvesting | T1003     |
-| Privilege Escalation | Token Manipulation    | T1134     |
-| Persistence          | Run Keys / Startup    | T1547     |
-| Persistence          | Scheduled Task        | T1053     |
-| Command & Control    | Proxy / Tunnel        | T1090     |
-| Exfiltration Prep    | Data Staging          | T1074     |
+
+## Conclusion
+
+This investigation determined that the activity on **CH-OPS-WKS02** was **malicious**, not legitimate CorpHealth operations. The attacker used valid credentials (`chadmin`) to gain access, performed early reconnaissance and credential discovery, escalated privileges through token manipulation, and established persistence using registry keys, scheduled tasks, and the Startup folder.
+
+Following escalation, the attacker staged and executed an unsigned binary (`revshell.exe`) delivered via an external **ngrok** tunnel and attempted outbound command-and-control communication. Encoded PowerShell usage, short-lived persistence, and selective cleanup indicate deliberate evasion rather than automation errors.
+
+Overall, the evidence confirms a **hands-on intrusion** abusing trusted automation infrastructure, emphasizing the risk of over-privileged service accounts and the need for tighter monitoring of operational tooling and credential use.
+
