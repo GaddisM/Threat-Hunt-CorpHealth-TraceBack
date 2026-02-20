@@ -182,7 +182,7 @@ The following were explicitly excluded from scope:
 ```
 -----
 
-
+## Findings
 ## Investigation Walkthrough - Flag by Flag - Analyst Explanation
 
 This section documents the **analyst reasoning and investigative purpose behind each flag**. Each flag represents a discrete hypothesis test used to validate attacker behavior, reconstruct the intrusion timeline, and distinguish malicious activity from legitimate operational noise.
