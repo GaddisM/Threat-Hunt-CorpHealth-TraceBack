@@ -38,7 +38,7 @@ This report provides a full technical reconstruction of the attack chain, mapped
 ## Investigation Methodology
 
 This investigation followed a **hypothesis-driven threat hunting model**:
-```kql
+
 1. **Scope Definition** – Identify affected assets and timeframe  
 2. **Baseline Validation** – Compare observed activity against known CorpHealth behavior  
 3. **Behavioral Deviation Analysis** – Identify anomalies across process, file, registry, and network telemetry  
@@ -47,18 +47,18 @@ This investigation followed a **hypothesis-driven threat hunting model**:
 6. **Attribution Context** – Enrich with session metadata and geolocation  
 7. **Closure & Synthesis** – Reconstruct full attack chain  
 
-```
+
 -----
 ## Scope and Environment
 
 This investigation was conducted within a controlled corporate endpoint environment supporting internal operations and diagnostics.
 
 ### Organizational Context
-```kql
+
 - **Company Name:** CorpHealth
 - **Business Function:** Internal endpoint diagnostics, operational monitoring, and maintenance
 - **Environment Type:** Corporate IT Operations (On-Prem + Cloud-integrated)
-```
+
 ### In-Scope Assets
 The following assets were explicitly included in the scope of this investigation:
 ```kql
