@@ -3,18 +3,6 @@
 
 ---
 
-## Case Metadata
-
-- **Case Name:** CorpHealth Privileged Automation Review  
-- **Incident Classification:** Operations Activity Review (Pre-Incident → Confirmed Intrusion)  
-- **Analyst Role:** Lead Threat Analyst  
-- **Data Sources:**  
-  - Microsoft Defender for Endpoint  
-  - Azure Logs  
-  - Endpoint Artifacts  
-- **Primary Host:** CH-OPS-WKS02  
-- **Investigation Period:** 2025-11-15 → 2025-12-09 
-
 ----
 -----
 ## Executive Summary
